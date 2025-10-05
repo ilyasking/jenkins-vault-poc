@@ -1,10 +1,7 @@
 pipeline {
   agent any
 
-  options {
-    // Keep logs shorter on first runs
-    timestamps()
-  }
+  options { timestamps() }
 
   stages {
     stage('Check tools') {
@@ -14,7 +11,7 @@ pipeline {
       }
     }
 
-    stage('Read secret from Vault') {
+    stage('Read & use secrets from Vault') {
       steps {
         withVault(vaultSecrets: [[
           path: 'kv/jenkins/example', engineVersion: 2,
@@ -27,17 +24,9 @@ pipeline {
             echo "Fetched from Vault:"
             echo "  VAULT_USERNAME=$VAULT_USERNAME"
             echo "  VAULT_PASSWORD length: ${#VAULT_PASSWORD}"
+            echo "Pretend we build & deploy here..."
           '''
         }
-      }
-    }
-
-    stage('Do something using secrets') {
-      environment {
-        // (Example) build args, API calls, etc., using the env vars
-      }
-      steps {
-        sh 'echo "Pretend we build & deploy here..."'
       }
     }
   }
