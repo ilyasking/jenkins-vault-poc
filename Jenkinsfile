@@ -16,17 +16,13 @@ pipeline {
 
     stage('Read secret from Vault') {
       steps {
-        withVault(
-          vaultUrl: 'http://vault:8200',
-          credentialsId: 'vault-token',
-          vaultSecrets: [[
-            path: 'kv/jenkins/example', engineVersion: 2,
-            secretValues: [
-              [envVar: 'VAULT_USERNAME', vaultKey: 'username'],
-              [envVar: 'VAULT_PASSWORD', vaultKey: 'password']
-            ]
-          ]]
-        ) {
+        withVault(vaultSecrets: [[
+          path: 'kv/jenkins/example', engineVersion: 2,
+          secretValues: [
+            [envVar: 'VAULT_USERNAME', vaultKey: 'username'],
+            [envVar: 'VAULT_PASSWORD', vaultKey: 'password']
+          ]
+        ]]) {
           sh '''
             echo "Fetched from Vault:"
             echo "  VAULT_USERNAME=$VAULT_USERNAME"
